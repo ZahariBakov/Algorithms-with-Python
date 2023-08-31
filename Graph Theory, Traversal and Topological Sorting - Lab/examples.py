@@ -1,6 +1,9 @@
 # Adjacency list # the specific index is the parent
 from collections import deque
 
+print("Types of graphs")
+print("----------------------------------------------")
+
 list_graph = [
     [],
     [2, 4],
@@ -76,11 +79,14 @@ dict_graph = {
 
 visited = set()
 
+print('DFS Algorithm:', end=" ")
+
 for node in dict_graph:
     dfs(node, dict_graph, visited)
 
 # ----------------------------------------------
 print()
+
 
 def second_dfs(node, graph, visited):
     if visited[node]:
@@ -107,12 +113,16 @@ second_list_graph = [
 len_graph = len(second_list_graph)
 second_visited = [False] * len_graph
 
+print("DFS Algorithm:", end=" ")
+
 for node in range(len_graph):
     second_dfs(node, second_list_graph, second_visited)
 
 # --------------------------------------------------------------------
 # BFS Algorithm
 print()
+
+
 def bfs(node, graph, visited):
     if node in visited:
         return
@@ -129,7 +139,10 @@ def bfs(node, graph, visited):
                 visited.add(child)
                 queue.append(child)
 
+
 bfs_visited = set()
+
+print("BFS Algorithm:", end=" ")
 
 for node in dict_graph:
     bfs(node, dict_graph, bfs_visited)
