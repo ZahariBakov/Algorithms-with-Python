@@ -8,9 +8,11 @@ cols = len(second) + 1
 for _ in range(rows):
     dp.append([0] * cols)
 
-for cur_idx in range(1, cols):
-    dp[0][cur_idx] = cur_idx
-    dp[cur_idx][0] = cur_idx
+for col in range(1, cols):
+    dp[0][col] = col
+
+for row in range(1, rows):
+    dp[row][0] = row
 
 
 for row in range(1, rows):

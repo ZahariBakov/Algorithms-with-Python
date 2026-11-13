@@ -35,4 +35,4 @@ while row > 0 and col > 0:
     else:
         col -= 1
 
-print(result)
+print(''.join(result))

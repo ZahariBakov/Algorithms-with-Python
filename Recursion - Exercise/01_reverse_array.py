@@ -4,7 +4,7 @@ def reverse_aray(left_idx, array):
 
     right_idx = len(array) - 1 - left_idx
     array[left_idx], array[right_idx] = array[right_idx], array[left_idx]
-    reverse_aray(left_idx + 1, elements)
+    reverse_aray(left_idx + 1, array)
 
 elements = input().split()
 

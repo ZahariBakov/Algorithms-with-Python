@@ -5,7 +5,7 @@ def merge_arrays(left, right):
     result_idx = 0
 
     while left_idx < len(left) and right_idx < len(right):
-        if left[left_idx] < right[right_idx]:
+        if left[left_idx] <= right[right_idx]:
             result[result_idx] = left[left_idx]
             left_idx += 1
         else:
@@ -27,7 +27,7 @@ def merge_arrays(left, right):
 
 
 def merge_sort(nums):
-    if len(nums) == 1:
+    if len(nums) <= 1:
         return nums
 
     mid_idx = len(nums) // 2

@@ -27,6 +27,3 @@ for row in range(1, rows):
                                dp[row - 1][col - 1] + replace_cost)
 
 print(f"Minimum edit distance: {dp[rows - 1][cols - 1]}")
-
-for row in dp:
-    print(row)

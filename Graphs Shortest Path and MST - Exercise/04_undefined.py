@@ -5,7 +5,7 @@ def find_path(parent, node):
     result = deque()
 
     while node is not None:
-        queue.appendleft(node)
+        result.appendleft(node)
         node = parent[node]
 
     return result
@@ -48,5 +48,5 @@ for first, second, weight in graph:
 else:
     path = find_path(parent, destination)
 
-    print(*queue, sep=" ")
+    print(*path, sep=" ")
     print(distance[destination])

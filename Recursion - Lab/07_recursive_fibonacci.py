@@ -8,7 +8,7 @@ def calc_fib(number):
 def iterative_fib(number):
     fib0 = 1
     fib1 = 1
-    result = 0
+    result = 1
 
     for _ in range(number - 1):
         result = fib0 + fib1

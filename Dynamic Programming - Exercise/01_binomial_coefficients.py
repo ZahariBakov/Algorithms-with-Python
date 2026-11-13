@@ -1,4 +1,7 @@
 def calc_binom(n, k, memo):
+    if k > n:
+        return 0
+
     key = f"{n} {k}"
 
     if key in memo:

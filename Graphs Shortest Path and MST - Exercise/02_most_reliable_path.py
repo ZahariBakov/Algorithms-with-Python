@@ -46,13 +46,16 @@ while not pq.empty():
             parent[child] = node
             pq.put((-new_distance, child))
 
-print(f"Most reliable path reliability: {distance[destination]:.2f}%")
+if distance[destination] == float("-inf"):
+    print("There is no path between the two nodes")
+else:
+    print(f"Most reliable path reliability: {distance[destination]:.2f}%")
 
-queue = deque()
-node = destination
+    queue = deque()
+    node = destination
 
-while node is not None:
-    queue.appendleft(node)
-    node = parent[node]
+    while node is not None:
+        queue.appendleft(node)
+        node = parent[node]
 
-print(*queue, sep=" -> ")
+    print(*queue, sep=" -> ")

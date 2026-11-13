@@ -53,5 +53,8 @@ parent = find_parent_by_node(graph, start_node, destination_node)
 
 path = reconstruct_path(parent, destination_node)
 
-print(f"Shortest path length is: {len(path) - 1}")
-print(*path)
+if path[0] != start_node:
+    print("There is no path between the two nodes")
+else:
+    print(f"Shortest path length is: {len(path) - 1}")
+    print(*path)

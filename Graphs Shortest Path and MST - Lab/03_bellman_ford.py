@@ -48,12 +48,15 @@ for edge in graph:
         print("Negative Cycle Detected")
         break
 else:
-    path = deque()
-    node = target
+    if distance[target] == float("inf"):
+        print("There is no path to the target")
+    else:
+        path = deque()
+        node = target
 
-    while node is not None:
-        path.appendleft(node)
-        node = parent[node]
+        while node is not None:
+            path.appendleft(node)
+            node = parent[node]
 
-    print(*path)
-    print(distance[target])
+        print(*path)
+        print(distance[target])

@@ -67,7 +67,7 @@ def dfs(node, graph, visited, cycles, sorted_nodes, has_cycles):
     visited.add(node)
     cycles.add(node)
 
-    for child in graph[node]:
+    for child in graph.get(node, []):
         dfs(child, graph, visited, cycles, sorted_nodes, has_cycles)
 
     cycles.remove(node)
@@ -80,7 +80,7 @@ graph = {}
 for _ in range(nodes):
     current_line = input().split("->")
     node = current_line[0].strip()
-    child = current_line[1].strip().split(", ") if current_line[1] else []
+    child = current_line[1].strip().split(", ") if current_line[1].strip() else []
     graph[node] = child
 
 visited = set()
@@ -88,8 +88,11 @@ cycles = set()
 has_cycles = False
 sorted_nodes = deque()
 
-for node in graph:
-    dfs(node, graph, visited, cycles, sorted_nodes, has_cycles)
+try:
+    for node in graph:
+        dfs(node, graph, visited, cycles, sorted_nodes, has_cycles)
+except Exception:
+    has_cycles = True
 
 if has_cycles:
     print("Invalid topological sorting")
