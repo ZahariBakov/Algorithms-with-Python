@@ -12,7 +12,9 @@ from viz.algorithms.sorting import (
 )
 from viz.algorithms.searching import binary_search
 from viz.algorithms.dp import edit_distance, lcs, move_down_right
+from viz.algorithms.graphs import SAMPLE_GRAPH, SAMPLE_POSITIONS, bfs
 from viz.renderers.bars import BarsRenderer
+from viz.renderers.graph import GraphRenderer
 from viz.renderers.table import TableRenderer
 from viz.steps import COMPARE, DONE, NOT_FOUND, SWAP, WRITE, Step
 
@@ -60,6 +62,8 @@ TABLE_KEYS = {
     LCS_KEY: ('LCS', lcs),
     EDIT_KEY: ('Edit distance', edit_distance),
 }
+# Key B is breadth first search (BFS) on a small graph.
+GRAPH_KEY = pygame.K_b
 WORDS = [
     'algorithm', 'python', 'computer', 'keyboard', 'monitor', 'program',
     'variable', 'function', 'network', 'pointer', 'compiler', 'database',
@@ -98,6 +102,10 @@ def main():
     clock = pygame.time.Clock()
     bars = BarsRenderer()
     table = TableRenderer()
+    graph_view = GraphRenderer()
+    graph_view.set_graph(SAMPLE_GRAPH, SAMPLE_POSITIONS)
+    graph_mode = False
+    start_node = 0
     renderer = bars
     words = new_words()
     grid = new_grid()
@@ -122,8 +130,17 @@ def main():
     def restart(key=None):
         nonlocal name, algorithm, steps, current, time_since_step
         nonlocal compares, changes, searching, target
-        nonlocal renderer, table_mode, table_key
-        if key in TABLE_KEYS or key == GRID_KEY:
+        nonlocal renderer, table_mode, table_key, graph_mode
+        if key == GRAPH_KEY:
+            graph_mode = True
+            table_mode = False
+            searching = False
+            name = 'BFS'
+        elif key is not None:
+            graph_mode = False
+        if key == GRAPH_KEY:
+            pass  # already set above
+        elif key in TABLE_KEYS or key == GRID_KEY:
             table_mode = True
             searching = False
             table_key = key
@@ -139,8 +156,15 @@ def main():
             table_mode = False
             searching = False
             name, algorithm = ALGORITHMS[key]
-        renderer = table if table_mode else bars
+        renderer = bars
         if table_mode:
+            renderer = table
+        elif graph_mode:
+            renderer = graph_view
+        if graph_mode:
+            steps = bfs(SAMPLE_GRAPH, start_node)
+            current = Step('idle', (), [], [])
+        elif table_mode:
             if table_key == GRID_KEY:
                 table.set_words('', '')
                 steps = move_down_right(grid)
@@ -173,10 +197,12 @@ def main():
                     speed_index = min(speed_index + 1, len(SPEEDS) - 1)
                 elif key == pygame.K_DOWN:
                     speed_index = max(speed_index - 1, 0)
-                elif key in ALGORITHMS or key in (SEARCH_KEY, GRID_KEY, *TABLE_KEYS):
+                elif key in ALGORITHMS or key in (SEARCH_KEY, GRID_KEY, GRAPH_KEY, *TABLE_KEYS):
                     restart(key)
                 elif key == pygame.K_r:
-                    if table_mode:
+                    if graph_mode:
+                        start_node = random.choice(list(SAMPLE_GRAPH))
+                    elif table_mode:
                         words = new_words()
                         grid = new_grid()
                     else:
@@ -198,7 +224,13 @@ def main():
 
         renderer.draw(screen, current)
         state = 'paused' if paused else f'{SPEEDS[speed_index]} steps/s'
-        if table_mode:
+        if graph_mode:
+            if current.kind == DONE:
+                result = 'order: ' + ' '.join(str(n) for n in current.info)
+            else:
+                result = 'searching...'
+            caption = f'{name} - {state} - start: {start_node} - {result}'
+        elif table_mode:
             if current.kind != DONE:
                 result = 'working...'
             elif table_key == LCS_KEY:
