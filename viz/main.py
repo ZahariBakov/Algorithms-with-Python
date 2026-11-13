@@ -10,8 +10,9 @@ from viz.algorithms.sorting import (
     quick_sort,
     selection_sort,
 )
+from viz.algorithms.searching import binary_search
 from viz.renderers.bars import BarsRenderer
-from viz.steps import COMPARE, SWAP, WRITE, Step
+from viz.steps import COMPARE, DONE, NOT_FOUND, SWAP, WRITE, Step
 
 WINDOW_SIZE = (900, 500)
 ITEM_COUNT = 40
@@ -35,7 +36,13 @@ NUMPAD = {
     pygame.K_KP4: pygame.K_4,
     pygame.K_KP5: pygame.K_5,
     pygame.K_KP6: pygame.K_6,
+    pygame.K_KP7: pygame.K_7,
 }
+
+# Key 7 is binary search. It is not in ALGORITHMS because it needs
+# sorted data and a target.
+SEARCH_KEY = pygame.K_7
+MISSING_CHANCE = 0.3
 
 # Steps per second. Up goes to the next value, Down to the previous one.
 SPEEDS = [2, 5, 10, 20, 40, 80, 160, 320, 640]
@@ -43,6 +50,13 @@ SPEEDS = [2, 5, 10, 20, 40, 80, 160, 320, 640]
 
 def new_data():
     return random.sample(range(1, ITEM_COUNT + 1), ITEM_COUNT)
+
+
+def new_target(values):
+    """A random value from the list, or sometimes one that is not in it."""
+    if random.random() < MISSING_CHANCE:
+        return random.choice([0, ITEM_COUNT + 1])
+    return random.choice(values)
 
 
 def main():
@@ -63,13 +77,26 @@ def main():
     changes = 0  # swaps and writes
     running = True
 
+    searching = False
+    target = None
+
     def restart(key=None):
         nonlocal name, algorithm, steps, current, time_since_step
-        nonlocal compares, changes
-        if key is not None:
+        nonlocal compares, changes, searching, target
+        if key == SEARCH_KEY:
+            searching = True
+            name = 'Binary search'
+        elif key is not None:
+            searching = False
             name, algorithm = ALGORITHMS[key]
-        steps = algorithm(data)
-        current = Step('idle', (), list(data))
+        if searching:
+            shown = sorted(data)
+            target = new_target(shown)
+            steps = binary_search(shown, target)
+            current = Step('idle', (), shown)
+        else:
+            steps = algorithm(data)
+            current = Step('idle', (), list(data))
         time_since_step = 0.0
         compares = 0
         changes = 0
@@ -87,7 +114,7 @@ def main():
                     speed_index = min(speed_index + 1, len(SPEEDS) - 1)
                 elif key == pygame.K_DOWN:
                     speed_index = max(speed_index - 1, 0)
-                elif key in ALGORITHMS:
+                elif key in ALGORITHMS or key == SEARCH_KEY:
                     restart(key)
                 elif key == pygame.K_r:
                     data = new_data()
@@ -108,8 +135,18 @@ def main():
 
         renderer.draw(screen, current)
         state = 'paused' if paused else f'{SPEEDS[speed_index]} steps/s'
-        pygame.display.set_caption(
-            f'{name} - {state} - compares: {compares}, swaps/writes: {changes}')
+        if searching:
+            if current.kind == DONE:
+                result = f'found at index {current.indices[0]}'
+            elif current.kind == NOT_FOUND:
+                result = 'not found (-1)'
+            else:
+                result = 'searching...'
+            caption = f'{name} - {state} - target: {target} - {result}'
+        else:
+            caption = (f'{name} - {state} - compares: {compares}, '
+                       f'swaps/writes: {changes}')
+        pygame.display.set_caption(caption)
         pygame.display.flip()
         clock.tick(FPS)
 

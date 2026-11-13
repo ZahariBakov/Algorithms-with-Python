@@ -1,6 +1,6 @@
 import pygame
 
-from viz.steps import COMPARE, DONE, SWAP, WRITE
+from viz.steps import COMPARE, DONE, NOT_FOUND, RANGE, SWAP, WRITE
 
 BACKGROUND = (20, 20, 28)
 NORMAL = (120, 130, 150)
@@ -8,6 +8,10 @@ YELLOW = (240, 210, 60)
 RED = (220, 60, 60)
 GREEN = (70, 200, 100)
 ORANGE = (240, 140, 50)
+
+DIM = (60, 65, 80)
+DIM_RED = (110, 50, 50)
+BLUE = (80, 150, 240)
 
 KIND_COLORS = {COMPARE: YELLOW, SWAP: RED, WRITE: ORANGE, DONE: GREEN}
 
@@ -40,4 +44,16 @@ class BarsRenderer:
             x = int(self.margin + i * slot)
             y = height - self.margin - bar_height
             color = highlight if i in step.indices else NORMAL
+            if step.kind == RANGE:
+                left, mid, right = step.indices
+                if i == mid:
+                    color = YELLOW
+                elif i in (left, right):
+                    color = BLUE
+                elif left < i < right:
+                    color = NORMAL
+                else:
+                    color = DIM
+            elif step.kind == NOT_FOUND:
+                color = DIM_RED
             pygame.draw.rect(surface, color, (x, y, bar_width, bar_height))
