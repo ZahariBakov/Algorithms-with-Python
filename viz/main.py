@@ -11,7 +11,7 @@ from viz.algorithms.sorting import (
     selection_sort,
 )
 from viz.algorithms.searching import binary_search
-from viz.algorithms.dp import lcs
+from viz.algorithms.dp import edit_distance, lcs, move_down_right
 from viz.renderers.bars import BarsRenderer
 from viz.renderers.table import TableRenderer
 from viz.steps import COMPARE, DONE, NOT_FOUND, SWAP, WRITE, Step
@@ -40,6 +40,8 @@ NUMPAD = {
     pygame.K_KP6: pygame.K_6,
     pygame.K_KP7: pygame.K_7,
     pygame.K_KP8: pygame.K_8,
+    pygame.K_KP9: pygame.K_9,
+    pygame.K_KP0: pygame.K_0,
 }
 
 # Key 7 is binary search. It is not in ALGORITHMS because it needs
@@ -49,6 +51,15 @@ MISSING_CHANCE = 0.3
 
 # Key 8 is the longest common subsequence (LCS), drawn as a table.
 LCS_KEY = pygame.K_8
+# Key 9 is the edit distance (all costs are 1), also a table with two words.
+EDIT_KEY = pygame.K_9
+# Key 0 is move down right: the best sum in a small grid of numbers.
+GRID_KEY = pygame.K_0
+GRID_SIZE = (4, 6)  # rows, columns
+TABLE_KEYS = {
+    LCS_KEY: ('LCS', lcs),
+    EDIT_KEY: ('Edit distance', edit_distance),
+}
 WORDS = [
     'algorithm', 'python', 'computer', 'keyboard', 'monitor', 'program',
     'variable', 'function', 'network', 'pointer', 'compiler', 'database',
@@ -75,6 +86,12 @@ def new_words():
     return tuple(random.sample(WORDS, 2))
 
 
+def new_grid():
+    """A small grid of random numbers from 1 to 9."""
+    rows, cols = GRID_SIZE
+    return [[random.randint(1, 9) for _ in range(cols)] for _ in range(rows)]
+
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -83,7 +100,9 @@ def main():
     table = TableRenderer()
     renderer = bars
     words = new_words()
+    grid = new_grid()
     table_mode = False
+    table_key = LCS_KEY
 
     data = new_data()
     name, algorithm = ALGORITHMS[pygame.K_1]
@@ -103,11 +122,15 @@ def main():
     def restart(key=None):
         nonlocal name, algorithm, steps, current, time_since_step
         nonlocal compares, changes, searching, target
-        nonlocal renderer, table_mode
-        if key == LCS_KEY:
+        nonlocal renderer, table_mode, table_key
+        if key in TABLE_KEYS or key == GRID_KEY:
             table_mode = True
             searching = False
-            name = 'LCS'
+            table_key = key
+            if key == GRID_KEY:
+                name = 'Move down right'
+            else:
+                name = TABLE_KEYS[key][0]
         elif key == SEARCH_KEY:
             table_mode = False
             searching = True
@@ -118,8 +141,12 @@ def main():
             name, algorithm = ALGORITHMS[key]
         renderer = table if table_mode else bars
         if table_mode:
-            table.set_words(*words)
-            steps = lcs(*words)
+            if table_key == GRID_KEY:
+                table.set_words('', '')
+                steps = move_down_right(grid)
+            else:
+                table.set_words(*words)
+                steps = TABLE_KEYS[table_key][1](*words)
             current = Step('idle', (), [])
         elif searching:
             shown = sorted(data)
@@ -146,11 +173,12 @@ def main():
                     speed_index = min(speed_index + 1, len(SPEEDS) - 1)
                 elif key == pygame.K_DOWN:
                     speed_index = max(speed_index - 1, 0)
-                elif key in ALGORITHMS or key in (SEARCH_KEY, LCS_KEY):
+                elif key in ALGORITHMS or key in (SEARCH_KEY, GRID_KEY, *TABLE_KEYS):
                     restart(key)
                 elif key == pygame.K_r:
                     if table_mode:
                         words = new_words()
+                        grid = new_grid()
                     else:
                         data = new_data()
                     restart()
@@ -171,10 +199,17 @@ def main():
         renderer.draw(screen, current)
         state = 'paused' if paused else f'{SPEEDS[speed_index]} steps/s'
         if table_mode:
-            result = (f'answer: "{current.info}"' if current.kind == DONE
-                      else 'working...')
-            caption = (f'{name} - {state} - "{words[0]}" and "{words[1]}" '
-                       f'- {result}')
+            if current.kind != DONE:
+                result = 'working...'
+            elif table_key == LCS_KEY:
+                result = f'answer: "{current.info}"'
+            else:
+                result = f'answer: {current.info}'
+            if table_key == GRID_KEY:
+                caption = f'{name} - {state} - best sum - {result}'
+            else:
+                caption = (f'{name} - {state} - "{words[0]}" and '
+                           f'"{words[1]}" - {result}')
         elif searching:
             if current.kind == DONE:
                 result = f'found at index {current.indices[0]}'

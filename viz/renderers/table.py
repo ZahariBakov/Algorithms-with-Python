@@ -18,12 +18,14 @@ class TableRenderer:
         self.margin = margin
         self.first = ''
         self.second = ''
+        self._last_path = ()
         self._font = None
         self._font_size = 0
 
     def set_words(self, first, second):
         self.first = first
         self.second = second
+        self._last_path = ()
 
     def _get_font(self, size):
         if self._font is None or self._font_size != size:
@@ -53,10 +55,13 @@ class TableRenderer:
             yellow = (step.indices,)
             blue = step.info
         elif step.kind == PATH:
+            self._last_path = step.info
             green = step.info
         elif step.kind == DONE:
             # Show the whole path in the last picture, if there is one.
-            green = self._path_of(table)
+            green = self._last_path
+        if step.kind == CELL:
+            self._last_path = ()
 
         left = self.margin
         top = self.margin
@@ -90,18 +95,3 @@ class TableRenderer:
         rect = image.get_rect(center=(x + size // 2, y + size // 2))
         surface.blit(image, rect)
 
-    def _path_of(self, table):
-        """The path back, found again from the finished table."""
-        row = len(table) - 1
-        col = len(table[0]) - 1
-        path = [(row, col)]
-        while row > 0 and col > 0:
-            if self.first[row - 1] == self.second[col - 1]:
-                row -= 1
-                col -= 1
-            elif table[row - 1][col] > table[row][col - 1]:
-                row -= 1
-            else:
-                col -= 1
-            path.append((row, col))
-        return path
