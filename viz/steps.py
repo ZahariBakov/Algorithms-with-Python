@@ -6,6 +6,8 @@ WRITE = 'write'
 DONE = 'done'
 RANGE = 'range'
 NOT_FOUND = 'not_found'
+CELL = 'cell'
+PATH = 'path'
 
 
 @dataclass
@@ -18,7 +20,13 @@ class Step:
     NOT_FOUND is the last step of a search that did not find the target.
     indices: the positions that this step is about.
     data: a copy of the list at this moment.
+    info: extra data for table algorithms (None for the others).
+    CELL: indices is (row, col), info is the tuple of cells it reads from.
+    PATH: info is the tuple of path cells found so far.
+    DONE (table): info is the answer.
+    For tables, data is a copy of the table (every row is copied too).
     """
     kind: str
     indices: tuple
     data: list
+    info: object = None

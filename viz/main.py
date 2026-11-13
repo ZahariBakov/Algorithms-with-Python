@@ -11,7 +11,9 @@ from viz.algorithms.sorting import (
     selection_sort,
 )
 from viz.algorithms.searching import binary_search
+from viz.algorithms.dp import lcs
 from viz.renderers.bars import BarsRenderer
+from viz.renderers.table import TableRenderer
 from viz.steps import COMPARE, DONE, NOT_FOUND, SWAP, WRITE, Step
 
 WINDOW_SIZE = (900, 500)
@@ -37,12 +39,21 @@ NUMPAD = {
     pygame.K_KP5: pygame.K_5,
     pygame.K_KP6: pygame.K_6,
     pygame.K_KP7: pygame.K_7,
+    pygame.K_KP8: pygame.K_8,
 }
 
 # Key 7 is binary search. It is not in ALGORITHMS because it needs
 # sorted data and a target.
 SEARCH_KEY = pygame.K_7
 MISSING_CHANCE = 0.3
+
+# Key 8 is the longest common subsequence (LCS), drawn as a table.
+LCS_KEY = pygame.K_8
+WORDS = [
+    'algorithm', 'python', 'computer', 'keyboard', 'monitor', 'program',
+    'variable', 'function', 'network', 'pointer', 'compiler', 'database',
+    'subsequence', 'sequence', 'iteration', 'recursion',
+]
 
 # Steps per second. Up goes to the next value, Down to the previous one.
 SPEEDS = [2, 5, 10, 20, 40, 80, 160, 320, 640]
@@ -59,11 +70,20 @@ def new_target(values):
     return random.choice(values)
 
 
+def new_words():
+    """Two different random words."""
+    return tuple(random.sample(WORDS, 2))
+
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
     clock = pygame.time.Clock()
-    renderer = BarsRenderer()
+    bars = BarsRenderer()
+    table = TableRenderer()
+    renderer = bars
+    words = new_words()
+    table_mode = False
 
     data = new_data()
     name, algorithm = ALGORITHMS[pygame.K_1]
@@ -83,13 +103,25 @@ def main():
     def restart(key=None):
         nonlocal name, algorithm, steps, current, time_since_step
         nonlocal compares, changes, searching, target
-        if key == SEARCH_KEY:
+        nonlocal renderer, table_mode
+        if key == LCS_KEY:
+            table_mode = True
+            searching = False
+            name = 'LCS'
+        elif key == SEARCH_KEY:
+            table_mode = False
             searching = True
             name = 'Binary search'
         elif key is not None:
+            table_mode = False
             searching = False
             name, algorithm = ALGORITHMS[key]
-        if searching:
+        renderer = table if table_mode else bars
+        if table_mode:
+            table.set_words(*words)
+            steps = lcs(*words)
+            current = Step('idle', (), [])
+        elif searching:
             shown = sorted(data)
             target = new_target(shown)
             steps = binary_search(shown, target)
@@ -114,10 +146,13 @@ def main():
                     speed_index = min(speed_index + 1, len(SPEEDS) - 1)
                 elif key == pygame.K_DOWN:
                     speed_index = max(speed_index - 1, 0)
-                elif key in ALGORITHMS or key == SEARCH_KEY:
+                elif key in ALGORITHMS or key in (SEARCH_KEY, LCS_KEY):
                     restart(key)
                 elif key == pygame.K_r:
-                    data = new_data()
+                    if table_mode:
+                        words = new_words()
+                    else:
+                        data = new_data()
                     restart()
 
         # One step per tick. The tick length depends on the speed.
@@ -135,7 +170,12 @@ def main():
 
         renderer.draw(screen, current)
         state = 'paused' if paused else f'{SPEEDS[speed_index]} steps/s'
-        if searching:
+        if table_mode:
+            result = (f'answer: "{current.info}"' if current.kind == DONE
+                      else 'working...')
+            caption = (f'{name} - {state} - "{words[0]}" and "{words[1]}" '
+                       f'- {result}')
+        elif searching:
             if current.kind == DONE:
                 result = f'found at index {current.indices[0]}'
             elif current.kind == NOT_FOUND:
