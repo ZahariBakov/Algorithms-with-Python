@@ -41,8 +41,13 @@ def binary_search(left, right, nums, target):
     else:
         return -1
 
-nums = [int(x) for x in input().split()]
-target = int(input())
+
+def main():
+    nums = [int(x) for x in input().split()]
+    target = int(input())
+
+    print(binary_search(0, len(nums) -1, nums, target))
 
 
-print(binary_search(0, len(nums) -1, nums, target))
+if __name__ == '__main__':
+    main()

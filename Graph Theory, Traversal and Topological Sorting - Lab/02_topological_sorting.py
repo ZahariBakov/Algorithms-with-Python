@@ -74,27 +74,41 @@ def dfs(node, graph, visited, cycles, sorted_nodes, has_cycles):
     sorted_nodes.appendleft(node)
 
 
-nodes = int(input())
-graph = {}
+def topological_sort(graph):
+    visited = set()
+    cycles = set()
+    has_cycles = False
+    sorted_nodes = deque()
 
-for _ in range(nodes):
-    current_line = input().split("->")
-    node = current_line[0].strip()
-    child = current_line[1].strip().split(", ") if current_line[1].strip() else []
-    graph[node] = child
+    try:
+        for node in graph:
+            dfs(node, graph, visited, cycles, sorted_nodes, has_cycles)
+    except Exception:
+        has_cycles = True
 
-visited = set()
-cycles = set()
-has_cycles = False
-sorted_nodes = deque()
+    if has_cycles:
+        return None
 
-try:
-    for node in graph:
-        dfs(node, graph, visited, cycles, sorted_nodes, has_cycles)
-except Exception:
-    has_cycles = True
+    return list(sorted_nodes)
 
-if has_cycles:
-    print("Invalid topological sorting")
-else:
-    print(f"Topological sorting: {', '.join(sorted_nodes)}")
+
+def main():
+    nodes = int(input())
+    graph = {}
+
+    for _ in range(nodes):
+        current_line = input().split("->")
+        node = current_line[0].strip()
+        child = current_line[1].strip().split(", ") if current_line[1].strip() else []
+        graph[node] = child
+
+    sorted_nodes = topological_sort(graph)
+
+    if sorted_nodes is None:
+        print("Invalid topological sorting")
+    else:
+        print(f"Topological sorting: {', '.join(sorted_nodes)}")
+
+
+if __name__ == '__main__':
+    main()

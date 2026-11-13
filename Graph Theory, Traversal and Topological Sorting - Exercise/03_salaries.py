@@ -15,23 +15,37 @@ def dfs(node, graph, salaries):
     return salary
 
 
-nodes = int(input())
-graph = []
+def total_salaries(lines):
+    nodes = len(lines)
+    graph = []
 
-for _ in range(nodes):
-    line = input()
-    children = []
+    for line in lines:
+        children = []
 
-    for idx, state in enumerate(line):
-        if state == "Y":
-            children.append(idx)
-    graph.append(children)
+        for idx, state in enumerate(line):
+            if state == "Y":
+                children.append(idx)
+        graph.append(children)
 
-salaries = [None] * nodes
-result = 0
+    salaries = [None] * nodes
+    result = 0
 
-for node in range(nodes):
-    salary = dfs(node, graph, salaries)
-    result += salary
+    for node in range(nodes):
+        salary = dfs(node, graph, salaries)
+        result += salary
 
-print(result)
+    return result
+
+
+def main():
+    nodes = int(input())
+    lines = []
+
+    for _ in range(nodes):
+        lines.append(input())
+
+    print(total_salaries(lines))
+
+
+if __name__ == '__main__':
+    main()

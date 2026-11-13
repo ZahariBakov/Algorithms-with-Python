@@ -1,14 +1,25 @@
-def nested_loops(idx, arr):
+def nested_loops(idx, arr, result):
     if idx >= len(arr):
-        print(*arr, sep=' ')
+        result.append(' '.join(str(x) for x in arr))
         return
 
     for num in range(1, len(arr) + 1):
         arr[idx] = num
-        nested_loops(idx + 1, arr)
+        nested_loops(idx + 1, arr, result)
 
-number = int(input())
 
-array = [None] * number
+def get_nested_loops(number):
+    result = []
+    nested_loops(0, [None] * number, result)
+    return result
 
-nested_loops(0, array)
+
+def main():
+    number = int(input())
+
+    for line in get_nested_loops(number):
+        print(line)
+
+
+if __name__ == '__main__':
+    main()

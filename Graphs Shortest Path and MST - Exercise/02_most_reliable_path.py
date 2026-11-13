@@ -7,49 +7,40 @@ class Edge:
         self.weight = weight
 
 
-nodes = int(input())
-edges = int(input())
+def most_reliable_path(nodes, edges, source, destination):
+    graph = []
+    [graph.append([]) for _ in range(nodes)]
 
-graph = []
-[graph.append([]) for _ in range(nodes)]
+    for first, second, weight in edges:
+        edge = Edge(first, second, weight)
+        graph[first].append(edge)
+        graph[second].append(edge)
 
-for _ in range(edges):
-    first, second, weight = [int(x) for x in input().split()]
-    edge = Edge(first, second, weight)
-    graph[first].append(edge)
-    graph[second].append(edge)
+    pq = PriorityQueue()
+    pq.put((-100, source))
 
-source = int(input())
-destination = int(input())
+    distance = [float("-inf")] * nodes
+    distance[source] = 100
 
-pq = PriorityQueue()
-pq.put((-100, source))
+    parent = [None] * nodes
 
-distance = [float("-inf")] * nodes
-distance[source] = 100
+    while not pq.empty():
+        max_distance, node = pq.get()
 
-parent = [None] * nodes
+        if node == destination:
+            break
 
+        for edge in graph[node]:
+            child = edge.second if edge.first == node else edge.first
+            new_distance = -max_distance * edge.weight / 100
 
-while not pq.empty():
-    max_distance, node = pq.get()
+            if new_distance > distance[child]:
+                distance[child] = new_distance
+                parent[child] = node
+                pq.put((-new_distance, child))
 
-    if node == destination:
-        break
-
-    for edge in graph[node]:
-        child = edge.second if edge.first == node else edge.first
-        new_distance = -max_distance * edge.weight / 100
-
-        if new_distance > distance[child]:
-            distance[child] = new_distance
-            parent[child] = node
-            pq.put((-new_distance, child))
-
-if distance[destination] == float("-inf"):
-    print("There is no path between the two nodes")
-else:
-    print(f"Most reliable path reliability: {distance[destination]:.2f}%")
+    if distance[destination] == float("-inf"):
+        return None
 
     queue = deque()
     node = destination
@@ -58,4 +49,32 @@ else:
         queue.appendleft(node)
         node = parent[node]
 
-    print(*queue, sep=" -> ")
+    return distance[destination], list(queue)
+
+
+def main():
+    nodes = int(input())
+    edges_count = int(input())
+
+    edges = []
+
+    for _ in range(edges_count):
+        first, second, weight = [int(x) for x in input().split()]
+        edges.append((first, second, weight))
+
+    source = int(input())
+    destination = int(input())
+
+    result = most_reliable_path(nodes, edges, source, destination)
+
+    if result is None:
+        print("There is no path between the two nodes")
+    else:
+        reliability, path = result
+        print(f"Most reliable path reliability: {reliability:.2f}%")
+
+        print(*path, sep=" -> ")
+
+
+if __name__ == '__main__':
+    main()

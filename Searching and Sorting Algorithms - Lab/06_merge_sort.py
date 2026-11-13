@@ -37,6 +37,11 @@ def merge_sort(nums):
     return merge_arrays(merge_sort(left), merge_sort(right))
 
 
-nums = [int(x) for x in input().split()]
+def main():
+    nums = [int(x) for x in input().split()]
 
-print(*merge_sort(nums), sep=" ")
+    print(*merge_sort(nums), sep=" ")
+
+
+if __name__ == '__main__':
+    main()

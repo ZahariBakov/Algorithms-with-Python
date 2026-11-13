@@ -11,50 +11,65 @@ class Edge:
         return self.weight > other.weight
 
 
-budget = int(input())
-nodes = int(input())
-edges = int(input())
-tree = set()
-budget_used = 0
+def budget_used_by_network(budget, nodes, edges):
+    tree = set()
+    budget_used = 0
 
-graph = []
-[graph.append([]) for _ in range(nodes)]
+    graph = []
+    [graph.append([]) for _ in range(nodes)]
 
-for _ in range(edges):
-    edges_data = input().split()
-    first, second, weight = int(edges_data[0]), int(edges_data[1]), int(edges_data[2])
-    graph[first].append(Edge(first, second, weight))
-    graph[second].append(Edge(first, second, weight))
+    for first, second, weight, in_tree in edges:
+        graph[first].append(Edge(first, second, weight))
+        graph[second].append(Edge(first, second, weight))
 
-    if len(edges_data) == 4:
-        tree.add(first)
-        tree.add(second)
+        if in_tree:
+            tree.add(first)
+            tree.add(second)
 
-pq = PriorityQueue()
+    pq = PriorityQueue()
 
-for node in tree:
-    for edge in graph[node]:
-        pq.put(edge)
+    for node in tree:
+        for edge in graph[node]:
+            pq.put(edge)
 
-while not pq.empty():
-    min_edge = pq.get()
-    non_tree_node = None
+    while not pq.empty():
+        min_edge = pq.get()
+        non_tree_node = None
 
-    if min_edge.first in tree and min_edge.second not in tree:
-        non_tree_node = min_edge.second
-    elif min_edge.first not in tree and min_edge.second in tree:
-        non_tree_node = min_edge.first
+        if min_edge.first in tree and min_edge.second not in tree:
+            non_tree_node = min_edge.second
+        elif min_edge.first not in tree and min_edge.second in tree:
+            non_tree_node = min_edge.first
 
-    if non_tree_node is None:
-        continue
+        if non_tree_node is None:
+            continue
 
-    if budget_used + min_edge.weight > budget:
-        break
+        if budget_used + min_edge.weight > budget:
+            break
 
-    budget_used += min_edge.weight
-    tree.add(non_tree_node)
+        budget_used += min_edge.weight
+        tree.add(non_tree_node)
 
-    for edge in graph[non_tree_node]:
-        pq.put(edge)
+        for edge in graph[non_tree_node]:
+            pq.put(edge)
 
-print(f"Budget used: {budget_used}")
+    return budget_used
+
+
+def main():
+    budget = int(input())
+    nodes = int(input())
+    edges_count = int(input())
+
+    edges = []
+
+    for _ in range(edges_count):
+        edges_data = input().split()
+        first, second, weight = int(edges_data[0]), int(edges_data[1]), int(edges_data[2])
+        edges.append((first, second, weight, len(edges_data) == 4))
+
+    print(f"Budget used: {budget_used_by_network(budget, nodes, edges)}")
+
+
+if __name__ == '__main__':
+    main()

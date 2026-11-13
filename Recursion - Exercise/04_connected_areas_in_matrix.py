@@ -23,26 +23,38 @@ def explore_area(row, col, matrix):
     return result
 
 
-rows = int(input())
-cols = int(input())
+def find_areas(rows, cols, matrix):
+    areas = []
 
-matrix = []
-areas = []
+    for row in range(rows):
+        for col in range(cols):
+            size = explore_area(row, col, matrix)
+            if size == 0:
+                continue
+            # areas.append(Area(row, col, size))
+            areas.append((row, col, size))
 
-for _ in range(rows):
-    matrix.append(list(input()))
+    return sorted(areas, key=lambda x: -x[2])
 
-for row in range(rows):
-    for col in range(cols):
-        size = explore_area(row, col, matrix)
-        if size == 0:
-            continue
-        # areas.append(Area(row, col, size))
-        areas.append((row, col, size))
 
-print(f'Total areas found: {len(areas)}')
-# for idx, area in enumerate(sorted(areas, key=lambda x: -x.size)):
-#     print(f'Area #{idx + 1} at ({area.row}, {area.col}), size: {area.size}')
+def main():
+    rows = int(input())
+    cols = int(input())
 
-for idx, (row, col, size) in enumerate(sorted(areas, key=lambda x: -x[2])):
-    print(f'Area #{idx + 1} at ({row}, {col}), size: {size}')
+    matrix = []
+
+    for _ in range(rows):
+        matrix.append(list(input()))
+
+    areas = find_areas(rows, cols, matrix)
+
+    print(f'Total areas found: {len(areas)}')
+    # for idx, area in enumerate(sorted(areas, key=lambda x: -x.size)):
+    #     print(f'Area #{idx + 1} at ({area.row}, {area.col}), size: {area.size}')
+
+    for idx, (row, col, size) in enumerate(areas):
+        print(f'Area #{idx + 1} at ({row}, {col}), size: {size}')
+
+
+if __name__ == '__main__':
+    main()

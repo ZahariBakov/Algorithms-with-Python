@@ -20,8 +20,14 @@ def quick_sort(start, end, array):
     quick_sort(start, right - 1, array)
     quick_sort(left, end, array)
 
-nums = [int(x) for x in input().split()]
 
-quick_sort(0, len(nums) - 1, nums)
+def main():
+    nums = [int(x) for x in input().split()]
 
-print(*nums, sep=" ")
+    quick_sort(0, len(nums) - 1, nums)
+
+    print(*nums, sep=" ")
+
+
+if __name__ == '__main__':
+    main()

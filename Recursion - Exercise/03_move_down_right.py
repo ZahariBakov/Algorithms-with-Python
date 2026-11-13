@@ -13,7 +13,12 @@ def count_all_paths(row, col, rows, cols):
     return result
 
 
-rows = int(input())
-cols = int(input())
+def main():
+    rows = int(input())
+    cols = int(input())
 
-print(count_all_paths(0, 0, rows, cols))
+    print(count_all_paths(0, 0, rows, cols))
+
+
+if __name__ == '__main__':
+    main()

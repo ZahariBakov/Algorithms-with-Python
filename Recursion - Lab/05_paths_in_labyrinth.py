@@ -1,4 +1,4 @@
-def find_all_paths(row, col, lab, direction, path):
+def find_all_paths(row, col, lab, direction, path, result):
     # Check if current position is outside
     if row < 0 or col < 0 or row >= len(lab) or col >= len(lab[0]):
         return
@@ -15,27 +15,39 @@ def find_all_paths(row, col, lab, direction, path):
 
     # Check if current position is 'EXIT'
     if lab[row][col] == 'e':
-        print(''.join(path))
+        result.append(''.join(path))
     else:
         # Marked current position as 'Visited'
         lab[row][col] = 'v'
 
         # Call function in four directions
-        find_all_paths(row, col + 1, lab, 'R', path)
-        find_all_paths(row, col - 1, lab, 'L', path)
-        find_all_paths(row + 1, col, lab, 'D', path)
-        find_all_paths(row - 1, col, lab, 'U', path)
+        find_all_paths(row, col + 1, lab, 'R', path, result)
+        find_all_paths(row, col - 1, lab, 'L', path, result)
+        find_all_paths(row + 1, col, lab, 'D', path, result)
+        find_all_paths(row - 1, col, lab, 'U', path, result)
         lab[row][col] = '-'
 
     path.pop()
 
 
-rows = int(input())
-cols = int(input())
+def get_all_paths(lab):
+    result = []
+    find_all_paths(0, 0, [list(row) for row in lab], '', [], result)
+    return result
 
-matrix = []
 
-for _ in range(rows):
-    matrix.append(list(input()))
+def main():
+    rows = int(input())
+    cols = int(input())
 
-find_all_paths(0, 0, matrix, '', [])
+    matrix = []
+
+    for _ in range(rows):
+        matrix.append(input())
+
+    for path in get_all_paths(matrix):
+        print(path)
+
+
+if __name__ == '__main__':
+    main()

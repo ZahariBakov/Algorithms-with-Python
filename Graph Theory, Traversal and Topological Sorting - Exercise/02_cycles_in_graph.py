@@ -14,27 +14,39 @@ def dfs(node, graph, visited, cycles):
     cycles.remove(node)
 
 
-command = input()
-graph = {}
+def is_acyclic(graph):
+    visited = set()
 
-while command != "End":
-    parent, child = command.split("-")
+    try:
+        for node in graph:
+            dfs(node, graph, visited, set())
+        return True
+    except Exception:
+        return False
 
-    if parent not in graph:
-        graph[parent] = []
 
-    if child not in graph:
-        graph[child] = []
-
-    graph[parent].append(child)
-
+def main():
     command = input()
+    graph = {}
 
-visited = set()
+    while command != "End":
+        parent, child = command.split("-")
 
-try:
-    for node in graph:
-        dfs(node, graph, visited, set())
-    print("Acyclic: Yes")
-except Exception:
-    print("Acyclic: No")
+        if parent not in graph:
+            graph[parent] = []
+
+        if child not in graph:
+            graph[child] = []
+
+        graph[parent].append(child)
+
+        command = input()
+
+    if is_acyclic(graph):
+        print("Acyclic: Yes")
+    else:
+        print("Acyclic: No")
+
+
+if __name__ == '__main__':
+    main()

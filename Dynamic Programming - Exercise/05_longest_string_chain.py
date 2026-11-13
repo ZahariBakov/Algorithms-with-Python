@@ -1,43 +1,53 @@
 from collections import deque
 
-words = input().split()
 
-length = len(words)
+def longest_string_chain(words):
+    length = len(words)
 
-size = [0] * length
-prev = [None] * length
+    size = [0] * length
+    prev = [None] * length
 
-best_size = 0
-best_idx = 0
+    best_size = 0
+    best_idx = 0
 
-for idx in range(length):
-    current_word = words[idx]
-    current_size = 1
-    parent = None
+    for idx in range(length):
+        current_word = words[idx]
+        current_size = 1
+        parent = None
 
-    for prev_idx in range(idx - 1, -1, -1):
-        prev_word = words[prev_idx]
+        for prev_idx in range(idx - 1, -1, -1):
+            prev_word = words[prev_idx]
 
-        if len(prev_word) >= len(current_word):
-            continue
+            if len(prev_word) >= len(current_word):
+                continue
 
-        if size[prev_idx] + 1 >= current_size:
-            current_size = size[prev_idx] + 1
-            parent = prev_idx
+            if size[prev_idx] + 1 >= current_size:
+                current_size = size[prev_idx] + 1
+                parent = prev_idx
 
-    size[idx] = current_size
-    prev[idx] = parent
+        size[idx] = current_size
+        prev[idx] = parent
 
-    if current_size > best_size:
-        best_size = current_size
-        best_idx = idx
+        if current_size > best_size:
+            best_size = current_size
+            best_idx = idx
 
-lis = deque()
+    lis = deque()
 
-idx = best_idx
+    idx = best_idx
 
-while idx is not None:
-    lis.appendleft(words[idx])
-    idx = prev[idx]
+    while idx is not None:
+        lis.appendleft(words[idx])
+        idx = prev[idx]
 
-print(*lis, sep=" ")
+    return list(lis)
+
+
+def main():
+    words = input().split()
+
+    print(*longest_string_chain(words), sep=" ")
+
+
+if __name__ == '__main__':
+    main()

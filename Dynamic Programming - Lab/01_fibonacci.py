@@ -11,6 +11,11 @@ def calc_fib(n, memo):
     return result
 
 
-number = int(input())
+def main():
+    number = int(input())
 
-print(calc_fib(number, {}))
+    print(calc_fib(number, {}))
+
+
+if __name__ == '__main__':
+    main()

@@ -36,30 +36,43 @@ def prim(node, graph, forest, forest_edges):
             pq.put(edge)
 
 
-edges = int(input())
-graph = {}
+def find_forest(edges):
+    graph = {}
 
-for _ in range(edges):
-    first, second, weight = [int(x) for x in input().split(", ")]
+    for first, second, weight in edges:
+        if first not in graph:
+            graph[first] = []
 
-    if first not in graph:
-        graph[first] = []
+        if second not in graph:
+            graph[second] = []
 
-    if second not in graph:
-        graph[second] = []
+        edge = Edge(first, second, weight)
+        graph[first].append(edge)
+        graph[second].append(edge)
 
-    edge = Edge(first, second, weight)
-    graph[first].append(edge)
-    graph[second].append(edge)
+    forest = set()
+    forest_edges = []
 
-forest = set()
-forest_edges = []
+    for node in graph:
+        if node in forest:
+            continue
 
-for node in graph:
-    if node in forest:
-        continue
+        prim(node, graph, forest, forest_edges)
 
-    prim(node, graph, forest, forest_edges)
+    return [(edge.first, edge.second) for edge in forest_edges]
 
-for edge in forest_edges:
-    print(f"{edge.first} - {edge.second}")
+
+def main():
+    edges_count = int(input())
+    edges = []
+
+    for _ in range(edges_count):
+        first, second, weight = [int(x) for x in input().split(", ")]
+        edges.append((first, second, weight))
+
+    for first, second in find_forest(edges):
+        print(f"{first} - {second}")
+
+
+if __name__ == '__main__':
+    main()

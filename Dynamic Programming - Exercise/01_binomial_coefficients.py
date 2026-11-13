@@ -16,7 +16,12 @@ def calc_binom(n, k, memo):
     return result
 
 
-n = int(input())
-k = int(input())
+def main():
+    n = int(input())
+    k = int(input())
 
-print(calc_binom(n, k, {}))
+    print(calc_binom(n, k, {}))
+
+
+if __name__ == '__main__':
+    main()

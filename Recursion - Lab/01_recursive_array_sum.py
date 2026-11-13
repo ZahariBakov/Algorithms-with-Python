@@ -5,6 +5,11 @@ def array_sum(nums, idx):
     return nums[idx] + array_sum(nums, idx + 1)
 
 
-nums = [int(x) for x in input().split()]
+def main():
+    nums = [int(x) for x in input().split()]
 
-print(array_sum(nums, 0))
+    print(array_sum(nums, 0))
+
+
+if __name__ == '__main__':
+    main()

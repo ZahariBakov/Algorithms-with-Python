@@ -11,42 +11,58 @@ def find_path(parent, node):
     return result
 
 
-nodes = int(input())
-edges = int(input())
+def shortest_path_bellman_ford(nodes, edges, source, destination):
+    graph = list(edges)
+    distance = [float("inf")] * (nodes + 1)
+    parent = [None] * (nodes + 1)
 
-graph = []
-distance = [float("inf")] * (nodes + 1)
-parent = [None] * (nodes + 1)
-queue = deque()
+    distance[source] = 0
 
-for _ in range(edges):
-    first, second, weight = [int(x) for x in input().split()]
-    graph.append((first, second, weight))
+    for _ in range(nodes - 1):
+        for first, second, weight in graph:
+            if distance[first] == float("inf"):
+                continue
 
-source = int(input())
-destination = int(input())
+            new_distance = distance[first] + weight
 
-distance[source] = 0
+            if new_distance < distance[second]:
+                distance[second] = new_distance
+                parent[second] = first
 
-for _ in range(nodes - 1):
     for first, second, weight in graph:
-        if distance[first] == float("inf"):
-            continue
-
         new_distance = distance[first] + weight
 
         if new_distance < distance[second]:
-            distance[second] = new_distance
-            parent[second] = first
+            return None
 
-for first, second, weight in graph:
-    new_distance = distance[first] + weight
-
-    if new_distance < distance[second]:
-        print("Undefined")
-        break
-else:
     path = find_path(parent, destination)
 
-    print(*path, sep=" ")
-    print(distance[destination])
+    return list(path), distance[destination]
+
+
+def main():
+    nodes = int(input())
+    edges_count = int(input())
+
+    edges = []
+
+    for _ in range(edges_count):
+        first, second, weight = [int(x) for x in input().split()]
+        edges.append((first, second, weight))
+
+    source = int(input())
+    destination = int(input())
+
+    result = shortest_path_bellman_ford(nodes, edges, source, destination)
+
+    if result is None:
+        print("Undefined")
+    else:
+        path, distance = result
+
+        print(*path, sep=" ")
+        print(distance)
+
+
+if __name__ == '__main__':
+    main()

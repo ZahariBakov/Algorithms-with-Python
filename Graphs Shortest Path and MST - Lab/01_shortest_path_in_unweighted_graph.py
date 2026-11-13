@@ -36,25 +36,45 @@ def reconstruct_path(parent, destination):
 
 from collections import deque
 
-nodes = int(input())
-edges = int(input())
 
-graph = []
-[graph.append([]) for _ in range(nodes + 1)]
+def shortest_path(nodes, edges, start_node, destination_node):
+    graph = []
+    [graph.append([]) for _ in range(nodes + 1)]
 
-for _ in range(edges):
-    start, destination = [int(x) for x in input().split()]
-    graph[start].append(destination)
+    for start, destination in edges:
+        graph[start].append(destination)
 
-start_node = int(input())
-destination_node = int(input())
+    parent = find_parent_by_node(graph, start_node, destination_node)
 
-parent = find_parent_by_node(graph, start_node, destination_node)
+    path = reconstruct_path(parent, destination_node)
 
-path = reconstruct_path(parent, destination_node)
+    if path[0] != start_node:
+        return None
 
-if path[0] != start_node:
-    print("There is no path between the two nodes")
-else:
-    print(f"Shortest path length is: {len(path) - 1}")
-    print(*path)
+    return list(path)
+
+
+def main():
+    nodes = int(input())
+    edges_count = int(input())
+
+    edges = []
+
+    for _ in range(edges_count):
+        start, destination = [int(x) for x in input().split()]
+        edges.append((start, destination))
+
+    start_node = int(input())
+    destination_node = int(input())
+
+    path = shortest_path(nodes, edges, start_node, destination_node)
+
+    if path is None:
+        print("There is no path between the two nodes")
+    else:
+        print(f"Shortest path length is: {len(path) - 1}")
+        print(*path)
+
+
+if __name__ == '__main__':
+    main()

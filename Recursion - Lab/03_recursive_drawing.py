@@ -1,12 +1,25 @@
-def draw_figure(num):
+def draw_figure(num, lines):
     if num == 0:
         return
 
-    print('*' * num)
+    lines.append('*' * num)
 
-    draw_figure(num - 1)
-    print('#' * num)
+    draw_figure(num - 1, lines)
+    lines.append('#' * num)
 
 
-num = int(input())
-draw_figure(num)
+def get_figure(num):
+    lines = []
+    draw_figure(num, lines)
+    return lines
+
+
+def main():
+    num = int(input())
+
+    for line in get_figure(num):
+        print(line)
+
+
+if __name__ == '__main__':
+    main()

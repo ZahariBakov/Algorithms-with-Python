@@ -16,33 +16,47 @@ def dfs(parent, row, col, matrix, visited):
     dfs(parent, row, col + 1, matrix, visited)
 
 
-rows = int(input())
-cols = int(input())
+def count_areas(rows, cols, matrix):
+    visited = []
+    areas = {}
+    total_areas = 0
 
-matrix = []
-visited = []
-areas = {}
-total_areas = 0
+    for _ in range(rows):
+        visited.append([False] * cols)
 
-for _ in range(rows):
-    matrix.append(list(input()))
-    visited.append([False] * cols)
+    for row in range(rows):
+        for col in range(cols):
+            if visited[row][col]:
+                continue
 
-for row in range(rows):
-    for col in range(cols):
-        if visited[row][col]:
-            continue
+            key = matrix[row][col]
+            dfs(key, row, col, matrix, visited)
+            total_areas += 1
 
-        key = matrix[row][col]
-        dfs(key, row, col, matrix, visited)
-        total_areas += 1
+            if key not in areas:
+                areas[key] = 1
+            else:
+                areas[key] += 1
 
-        if key not in areas:
-            areas[key] = 1
-        else:
-            areas[key] += 1
+    return total_areas, areas
 
-print(f"Areas: {total_areas}")
 
-for key, value in sorted(areas.items()):
-    print(f"Letter '{key}' -> {value}")
+def main():
+    rows = int(input())
+    cols = int(input())
+
+    matrix = []
+
+    for _ in range(rows):
+        matrix.append(list(input()))
+
+    total_areas, areas = count_areas(rows, cols, matrix)
+
+    print(f"Areas: {total_areas}")
+
+    for key, value in sorted(areas.items()):
+        print(f"Letter '{key}' -> {value}")
+
+
+if __name__ == '__main__':
+    main()

@@ -34,25 +34,34 @@ def find_path_size(parent, destination):
     return size
 
 
-nodes = int(input())
-pairs = int(input())
-
-graph = {}
-
-for _ in range(nodes):
-    node_str, children_str = input().split(":")
-
-    children = [int(x) for x in children_str.split()] if children_str else []
-    node = int(node_str)
-    graph[node] = children
-
-for _ in range(pairs):
-    source, destination = [int(x) for x in input().split("-")]
-
+def find_distance(graph, source, destination):
     parent = find_shortest_path(graph, source, destination)
     if destination not in parent:
-        size = -1
-    else:
-        size = find_path_size(parent, destination)
+        return -1
 
-    print(f"{{{source}, {destination}}} -> {size}")
+    return find_path_size(parent, destination)
+
+
+def main():
+    nodes = int(input())
+    pairs = int(input())
+
+    graph = {}
+
+    for _ in range(nodes):
+        node_str, children_str = input().split(":")
+
+        children = [int(x) for x in children_str.split()] if children_str else []
+        node = int(node_str)
+        graph[node] = children
+
+    for _ in range(pairs):
+        source, destination = [int(x) for x in input().split("-")]
+
+        size = find_distance(graph, source, destination)
+
+        print(f"{{{source}, {destination}}} -> {size}")
+
+
+if __name__ == '__main__':
+    main()

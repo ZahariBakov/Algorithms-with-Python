@@ -6,9 +6,14 @@ def reverse_aray(left_idx, array):
     array[left_idx], array[right_idx] = array[right_idx], array[left_idx]
     reverse_aray(left_idx + 1, array)
 
-elements = input().split()
 
-reverse_aray(0, elements)
+def main():
+    elements = input().split()
 
-print(' '.join(elements))
+    reverse_aray(0, elements)
 
+    print(' '.join(elements))
+
+
+if __name__ == '__main__':
+    main()

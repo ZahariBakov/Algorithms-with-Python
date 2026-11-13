@@ -14,8 +14,12 @@ def iterative_fact(n):
     return result
 
 
-num = int(input())
+def main():
+    num = int(input())
 
-print(calc_fact(num))
-print(iterative_fact(num))
+    print(calc_fact(num))
+    print(iterative_fact(num))
 
+
+if __name__ == '__main__':
+    main()

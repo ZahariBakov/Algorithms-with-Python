@@ -8,33 +8,51 @@ def dfs(node, graph, visited):
         dfs(child, graph, visited)
 
 
-nodes = int(input())
-edges_count = int(input())
-graph = []
-[graph.append([]) for _ in range(nodes)]
+def find_important_streets(nodes, streets):
+    graph = []
+    [graph.append([]) for _ in range(nodes)]
 
-# edges = set()
-edges = []
+    # edges = set()
+    edges = []
+    result = []
 
-for _ in range(edges_count):
-    first, second = [int(x) for x in input().split(" - ")]
-    graph[first].append(second)
-    graph[second].append(first)
-    # edges.add((min(first, second), max(first, second)))
-    edges.append((min(first, second), max(first, second)))
+    for first, second in streets:
+        graph[first].append(second)
+        graph[second].append(first)
+        # edges.add((min(first, second), max(first, second)))
+        edges.append((min(first, second), max(first, second)))
 
-print("Important streets:")
+    for first, second in edges:
+        graph[first].remove(second)
+        graph[second].remove(first)
 
-for first, second in edges:
-    graph[first].remove(second)
-    graph[second].remove(first)
+        visited = [False] * nodes
 
-    visited = [False] * nodes
+        dfs(0, graph, visited)
 
-    dfs(0, graph, visited)
+        if not all(visited):
+            result.append((first, second))
 
-    if not all(visited):
+        graph[first].append(second)
+        graph[second].append(first)
+
+    return result
+
+
+def main():
+    nodes = int(input())
+    edges_count = int(input())
+    streets = []
+
+    for _ in range(edges_count):
+        first, second = [int(x) for x in input().split(" - ")]
+        streets.append((first, second))
+
+    print("Important streets:")
+
+    for first, second in find_important_streets(nodes, streets):
         print(first, second)
 
-    graph[first].append(second)
-    graph[second].append(first)
+
+if __name__ == '__main__':
+    main()

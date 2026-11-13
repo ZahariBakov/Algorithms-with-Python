@@ -1,7 +1,5 @@
-def print_board(board):
-    for row in board:
-        print(' '.join(row))
-    print()
+def format_board(board):
+    return [' '.join(row) for row in board]
 
 
 def can_place_queen(row, col, rows, cols, left_diagonals, right_diagonals):
@@ -33,20 +31,35 @@ def remove_queen(row, col, board, rows, cols, left_diagonals, right_diagonals):
     right_diagonals.remove(row + col)
 
 
-def put_queens(row, n, board, rows, cols, left_diagonals, right_diagonals):
+def put_queens(row, n, board, rows, cols, left_diagonals, right_diagonals, solutions):
     if row == n:
-        print_board(board)
+        solutions.append(format_board(board))
         return
 
     for col in range(n):
         if can_place_queen(row, col, rows, cols, left_diagonals, right_diagonals):
             set_queen(row, col, board, rows, cols, left_diagonals, right_diagonals)
-            put_queens(row + 1, n, board, rows, cols, left_diagonals, right_diagonals)
+            put_queens(row + 1, n, board, rows, cols, left_diagonals, right_diagonals, solutions)
             remove_queen(row, col, board, rows, cols, left_diagonals, right_diagonals)
 
 
-n = 8
-board = []
-[board.append(['-'] * n) for _ in range(n)]
+def solve_queens(n):
+    board = []
+    [board.append(['-'] * n) for _ in range(n)]
 
-put_queens(0, n, board, set(), set(), set(), set())
+    solutions = []
+    put_queens(0, n, board, set(), set(), set(), set(), solutions)
+    return solutions
+
+
+def main():
+    n = 8
+
+    for solution in solve_queens(n):
+        for line in solution:
+            print(line)
+        print()
+
+
+if __name__ == '__main__':
+    main()

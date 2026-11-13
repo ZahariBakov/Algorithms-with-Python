@@ -22,6 +22,11 @@ def iterative_fib(number):
 # print(iterative_fib(10))
 # print(iterative_fib(50))
 
-num = int(input())
+def main():
+    num = int(input())
 
-print(iterative_fib(num))
+    print(iterative_fib(num))
+
+
+if __name__ == '__main__':
+    main()

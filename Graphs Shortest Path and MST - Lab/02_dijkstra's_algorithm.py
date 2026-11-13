@@ -9,51 +9,44 @@ class Edge:
         self.weight = weight
 
 
-edges = int(input())
-graph = {}
+def dijkstra(edges, start, target):
+    graph = {}
 
-for _ in range(edges):
-    source, destination, weight = [int(x) for x in input().split(", ")]
+    for source, destination, weight in edges:
+        if source not in graph:
+            graph[source] = []
 
-    if source not in graph:
-        graph[source] = []
+        if destination not in graph:
+            graph[destination] = []
 
-    if destination not in graph:
-        graph[destination] = []
+        graph[source].append(Edge(source, destination, weight))
 
-    graph[source].append(Edge(source, destination, weight))
+    max_node = max(graph.keys())
 
-start = int(input())
-target = int(input())
+    distance = [float('inf')] * (max_node + 1)
+    parent = [None] * (max_node + 1)
 
-max_node = max(graph.keys())
+    distance[start] = 0
 
-distance = [float('inf')] * (max_node + 1)
-parent = [None] * (max_node + 1)
+    pq = PriorityQueue()
+    pq.put((0, start))
 
-distance[start] = 0
+    while not pq.empty():
+        min_distance, node = pq.get()
 
-pq = PriorityQueue()
-pq.put((0, start))
+        if node == target:
+            break
 
-while not pq.empty():
-    min_distance, node = pq.get()
+        for edge in graph[node]:
+            new_distance = min_distance + edge.weight
 
-    if node == target:
-        break
+            if new_distance < distance[edge.destination]:
+                distance[edge.destination] = new_distance
+                parent[edge.destination] = node
+                pq.put((new_distance, edge.destination))
 
-    for edge in graph[node]:
-        new_distance = min_distance + edge.weight
-
-        if new_distance < distance[edge.destination]:
-            distance[edge.destination] = new_distance
-            parent[edge.destination] = node
-            pq.put((new_distance, edge.destination))
-
-if distance[target] == float('inf'):
-    print("There is no such path.")
-else:
-    print(distance[target])
+    if distance[target] == float('inf'):
+        return None
 
     path = deque()
     node = target
@@ -62,4 +55,30 @@ else:
         path.appendleft(node)
         node = parent[node]
 
-    print(*path)
+    return distance[target], list(path)
+
+
+def main():
+    edges_count = int(input())
+    edges = []
+
+    for _ in range(edges_count):
+        source, destination, weight = [int(x) for x in input().split(", ")]
+        edges.append((source, destination, weight))
+
+    start = int(input())
+    target = int(input())
+
+    result = dijkstra(edges, start, target)
+
+    if result is None:
+        print("There is no such path.")
+    else:
+        distance, path = result
+        print(distance)
+
+        print(*path)
+
+
+if __name__ == '__main__':
+    main()
