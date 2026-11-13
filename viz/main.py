@@ -26,6 +26,17 @@ ALGORITHMS = {
     pygame.K_6: ('Heap sort', heap_sort),
 }
 
+# The number keys on the right of the keyboard (the numpad) have other key codes.
+# They choose the same algorithms as the number keys above the letters.
+NUMPAD = {
+    pygame.K_KP1: pygame.K_1,
+    pygame.K_KP2: pygame.K_2,
+    pygame.K_KP3: pygame.K_3,
+    pygame.K_KP4: pygame.K_4,
+    pygame.K_KP5: pygame.K_5,
+    pygame.K_KP6: pygame.K_6,
+}
+
 # Steps per second. Up goes to the next value, Down to the previous one.
 SPEEDS = [2, 5, 10, 20, 40, 80, 160, 320, 640]
 
@@ -69,15 +80,16 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                key = NUMPAD.get(event.key, event.key)
+                if key == pygame.K_SPACE:
                     paused = not paused
-                elif event.key == pygame.K_UP:
+                elif key == pygame.K_UP:
                     speed_index = min(speed_index + 1, len(SPEEDS) - 1)
-                elif event.key == pygame.K_DOWN:
+                elif key == pygame.K_DOWN:
                     speed_index = max(speed_index - 1, 0)
-                elif event.key in ALGORITHMS:
-                    restart(event.key)
-                elif event.key == pygame.K_r:
+                elif key in ALGORITHMS:
+                    restart(key)
+                elif key == pygame.K_r:
                     data = new_data()
                     restart()
 
