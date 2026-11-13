@@ -21,6 +21,7 @@ class GraphRenderer:
         self.graph = {}
         self.positions = {}
         self._font = None
+        self.label = 'Queue'  # 'Stack' for DFS
 
     def set_graph(self, graph, positions):
         self.graph = graph
@@ -74,10 +75,10 @@ class GraphRenderer:
 
         # The queue and the order, as text at the side.
         x = width - SIDE_WIDTH + 10
-        lines = ['Queue:', ' '.join(str(n) for n in queue) or '-', '',
+        lines = [f'{self.label}:', ' '.join(str(n) for n in queue) or '-', '',
                  'Order:', ' '.join(str(n) for n in visited) or '-']
         if step.kind == DONE:
-            lines[0] = 'Queue: (empty)'
+            lines[0] = f'{self.label}: (empty)'
         for i, line in enumerate(lines):
             surface.blit(font.render(line, True, TEXT),
                          (x, self.margin + i * 28))

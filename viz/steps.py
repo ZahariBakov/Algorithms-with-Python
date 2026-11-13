@@ -30,7 +30,7 @@ class Step:
     of the queue.
     VISIT: indices is (node,), the node taken from the queue.
     FOUND: indices is (node,), a neighbor that was just put in the queue.
-    DONE (graph): info is the BFS order.
+    DONE (graph): info is the BFS or DFS order.
     For tables, data is a copy of the table (every row is copied too).
     """
     kind: str

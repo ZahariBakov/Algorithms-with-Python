@@ -48,9 +48,44 @@ def bfs(graph, start):
     yield Step(DONE, (), visited[:], visited[:])
 
 
-def bfs_order(steps):
-    """The BFS order, read from the last step."""
+def dfs(graph, start):
+    """Depth first search from start. Yields Step objects.
+
+    It uses a stack. A node is marked as visited when it comes off the
+    stack, so the order is the same as in a recursive DFS. The same node
+    can be on the stack more than once. A node that is already visited
+    is skipped. Neighbors are used in sorted order.
+    """
+    visited = []
+    done = set()
+    stack = [start]
+    while stack:
+        node = stack.pop()
+        if node in done:
+            continue
+        done.add(node)
+        visited.append(node)
+        yield Step(VISIT, (node,), visited[:], stack[:])
+        # Push in reverse, so the smallest neighbor is on top.
+        for neighbor in sorted(graph[node], reverse=True):
+            if neighbor not in done:
+                stack.append(neighbor)
+                yield Step(FOUND, (neighbor,), visited[:], stack[:])
+    yield Step(DONE, (), visited[:], visited[:])
+
+
+def _last_info(steps):
     last = None
     for last in steps:
         pass
     return last.info
+
+
+def bfs_order(steps):
+    """The BFS order, read from the last step."""
+    return _last_info(steps)
+
+
+def dfs_order(steps):
+    """The DFS order, read from the last step."""
+    return _last_info(steps)
