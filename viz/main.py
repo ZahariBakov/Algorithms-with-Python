@@ -2,9 +2,16 @@ import random
 
 import pygame
 
-from viz.algorithms.sorting import bubble_sort, insertion_sort, selection_sort
+from viz.algorithms.sorting import (
+    bubble_sort,
+    heap_sort,
+    insertion_sort,
+    merge_sort,
+    quick_sort,
+    selection_sort,
+)
 from viz.renderers.bars import BarsRenderer
-from viz.steps import Step
+from viz.steps import COMPARE, SWAP, WRITE, Step
 
 WINDOW_SIZE = (900, 500)
 ITEM_COUNT = 40
@@ -14,6 +21,9 @@ ALGORITHMS = {
     pygame.K_1: ('Bubble sort', bubble_sort),
     pygame.K_2: ('Selection sort', selection_sort),
     pygame.K_3: ('Insertion sort', insertion_sort),
+    pygame.K_4: ('Merge sort', merge_sort),
+    pygame.K_5: ('Quick sort', quick_sort),
+    pygame.K_6: ('Heap sort', heap_sort),
 }
 
 # Steps per second. Up goes to the next value, Down to the previous one.
@@ -38,15 +48,20 @@ def main():
     paused = False
     speed_index = 4
     time_since_step = 0.0
+    compares = 0
+    changes = 0  # swaps and writes
     running = True
 
     def restart(key=None):
         nonlocal name, algorithm, steps, current, time_since_step
+        nonlocal compares, changes
         if key is not None:
             name, algorithm = ALGORITHMS[key]
         steps = algorithm(data)
         current = Step('idle', (), list(data))
         time_since_step = 0.0
+        compares = 0
+        changes = 0
 
     while running:
         # Events are handled on every frame, even when paused.
@@ -74,10 +89,15 @@ def main():
             next_step = next(steps, None)
             if next_step is not None:
                 current = next_step
+                if next_step.kind == COMPARE:
+                    compares += 1
+                elif next_step.kind in (SWAP, WRITE):
+                    changes += 1
 
         renderer.draw(screen, current)
         state = 'paused' if paused else f'{SPEEDS[speed_index]} steps/s'
-        pygame.display.set_caption(f'{name} - {state}')
+        pygame.display.set_caption(
+            f'{name} - {state} - compares: {compares}, swaps/writes: {changes}')
         pygame.display.flip()
         clock.tick(FPS)
 

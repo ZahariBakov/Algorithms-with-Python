@@ -1,14 +1,15 @@
 import pygame
 
-from viz.steps import COMPARE, DONE, SWAP
+from viz.steps import COMPARE, DONE, SWAP, WRITE
 
 BACKGROUND = (20, 20, 28)
 NORMAL = (120, 130, 150)
 YELLOW = (240, 210, 60)
 RED = (220, 60, 60)
 GREEN = (70, 200, 100)
+ORANGE = (240, 140, 50)
 
-KIND_COLORS = {COMPARE: YELLOW, SWAP: RED, DONE: GREEN}
+KIND_COLORS = {COMPARE: YELLOW, SWAP: RED, WRITE: ORANGE, DONE: GREEN}
 
 
 class BarsRenderer:
